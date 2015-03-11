@@ -6,7 +6,6 @@
 #include <QScreen>
 #include <QLabel>
 #include <QImage>
-//#include <QTimer>
 
 
 CaptureScreen::CaptureScreen(QImage &image, QWidget *parent)
@@ -28,10 +27,8 @@ CaptureScreen::~CaptureScreen()
 void CaptureScreen::capture()
 {
     QScreen *screen = QGuiApplication::primaryScreen();
-    if (screen)
-    {
+    if(screen)
         m_labScreen->setPixmap(screen->grabWindow(0));
-    }
 
     //QTimer::singleShot(1000, this, SLOT(showFullScreen()));
     showFullScreen();

@@ -14,10 +14,11 @@ public:
     explicit CaptureScreen(QImage &image, QWidget *parent = 0);
     ~CaptureScreen();
 
-    void capture();
-
 signals:
     void imageCaptured();
+
+public slots:
+    void capture();
 
 protected:
     void mousePressEvent(QMouseEvent *event);

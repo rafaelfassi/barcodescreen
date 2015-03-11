@@ -1,10 +1,12 @@
 #include "mainwindow.h"
 #include "capturescreen.h"
+#include "utils.h"
 #include <QClipboard>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QApplication>
 #include <QLabel>
+#include <QTimer>
 #include <QDebug>
 
 //QSystemTrayIcon
@@ -18,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(button, SIGNAL(clicked()), this, SLOT(capture()));
     connect(m_capScreen, SIGNAL(imageCaptured()), this, SLOT(imageCaptured()));
+
+    //m_zXing.setDecoder(QZXing::DecoderFormat_ITF);
 }
 
 MainWindow::~MainWindow()
@@ -27,7 +31,7 @@ MainWindow::~MainWindow()
 void MainWindow::capture()
 {
     showMinimized();
-    m_capScreen->capture();
+    QTimer::singleShot(500, m_capScreen, SLOT(capture()));
 }
 
 void MainWindow::imageCaptured()
@@ -44,6 +48,9 @@ void MainWindow::imageCaptured()
 
         if(!strCode.isEmpty())
         {
+            if(strCode.size() == 44)
+                strCode = Utils::getLinhaDigitavel(strCode);
+
             QClipboard *clipboard = QApplication::clipboard();
             clipboard->setText(strCode);
             QMessageBox::information(this, "Ok", "O código foi copiado para a área de transferência\n" + strCode);
