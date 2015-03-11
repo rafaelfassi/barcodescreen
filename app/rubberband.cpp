@@ -7,7 +7,7 @@ RubberBand::RubberBand(Shape s, QWidget *p)
 {
 }
 
-void RubberBand::paintEvent(QPaintEvent *event)
+void RubberBand::paintEvent(QPaintEvent *)
 {
     QRect rec = rect();
     QMargins(0,0,-1,-1);
@@ -15,6 +15,9 @@ void RubberBand::paintEvent(QPaintEvent *event)
     rec =  rec + QMargins(0,0,-1,-1);
 
     QPainter painter(this);
+
     painter.setPen(QPen(Qt::lightGray, 1, Qt::DotLine));
     painter.drawRect(0, 0, rec.width(), rec.height());
+
+    //QRubberBand::paintEvent(event);
 }

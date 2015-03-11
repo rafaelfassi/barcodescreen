@@ -2,9 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QImage>
 #include "qzxing.h"
 
-class RubberBand;
+class CaptureScreen;
 
 class MainWindow : public QMainWindow
 {
@@ -14,14 +15,13 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-protected:
-    void mousePressEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
+private slots:
+    void capture();
+    void imageCaptured();
 
 private:
-    RubberBand *m_rubberBand;
-    QPoint m_origin;
+    CaptureScreen *m_capScreen;
+    QImage m_image;
     QZXing m_zXing;
 };
 

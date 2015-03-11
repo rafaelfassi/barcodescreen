@@ -1,96 +1,61 @@
 #include "mainwindow.h"
-#include "rubberband.h"
-#include <QMouseEvent>
-#include <QLabel>
-#include <QGuiApplication>
-#include <QApplication>
-#include <QScreen>
+#include "capturescreen.h"
 #include <QClipboard>
 #include <QMessageBox>
+#include <QPushButton>
+#include <QApplication>
+#include <QLabel>
 #include <QDebug>
 
 //QSystemTrayIcon
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), m_rubberBand(0)
+    : QMainWindow(parent)
 {
-    //setWindowFlags( Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint | Qt::Tool);
-    //setAttribute(Qt::WA_TranslucentBackground);
+    QPushButton *button = new QPushButton("Capturar", this);
+    m_capScreen = new CaptureScreen(m_image);
+    setCentralWidget(button);
 
-    setAttribute(Qt::WA_NoSystemBackground, true);
-    setAttribute(Qt::WA_TranslucentBackground, true);
+    connect(button, SIGNAL(clicked()), this, SLOT(capture()));
+    connect(m_capScreen, SIGNAL(imageCaptured()), this, SLOT(imageCaptured()));
 }
 
 MainWindow::~MainWindow()
 {
-
 }
 
-void MainWindow::mousePressEvent(QMouseEvent *event)
+void MainWindow::capture()
 {
-    m_origin = event->pos();
-    if (!m_rubberBand)
+    showMinimized();
+    m_capScreen->capture();
+}
+
+void MainWindow::imageCaptured()
+{
+    showNormal();
+
+    if(!m_image.isNull())
     {
-        m_rubberBand = new RubberBand(QRubberBand::Rectangle, this);
-    }
-    m_rubberBand->setGeometry(QRect(m_origin, QSize()));
-    m_rubberBand->show();
-}
+//        QLabel *myLabel = new QLabel(0);
+//        myLabel->setPixmap(QPixmap::fromImage(m_image));
+//        myLabel->show();
 
-void MainWindow::mouseMoveEvent(QMouseEvent *event)
-{
-    m_rubberBand->setGeometry(QRect(m_origin, event->pos()).normalized());
-}
+        QString strCode = m_zXing.decodeImage(m_image);
 
-void MainWindow::mouseReleaseEvent(QMouseEvent *event)
-{
-
-    m_rubberBand->hide();
-    update();
-
-    QScreen *screen = QGuiApplication::primaryScreen();
-    if (screen)
-    {
-        QRect rec = m_rubberBand->geometry();
-        QImage image = screen->grabWindow(0, rec.x(), rec.y(), rec.width(), rec.height()).toImage();
-
-        if(!image.isNull())
+        if(!strCode.isEmpty())
         {
-            QString strCode = m_zXing.decodeImage(image);
-
-            if(!strCode.isEmpty())
-            {
-                QClipboard *clipboard = QApplication::clipboard();
-                clipboard->setText(strCode);
-                QMessageBox::information(this, "Ok", "O código foi copiado para a área de transferência\n" + strCode);
-                this->close();
-            }
-            else
-            {
-                QMessageBox::warning(this, "Erro", "Não foi possível detectar o código da imagem");
-            }
-
+            QClipboard *clipboard = QApplication::clipboard();
+            clipboard->setText(strCode);
+            QMessageBox::information(this, "Ok", "O código foi copiado para a área de transferência\n" + strCode);
         }
         else
         {
-            QMessageBox::warning(this, "Erro", "Imagem inválida");
+            QMessageBox::warning(this, "Erro", "Não foi possível detectar o código da imagem");
         }
 
-
-//        QLabel *myLabel = new QLabel(0);
-//        QRect rec = m_rubberBand->geometry();
-//        rec.moveTopLeft(mapToGlobal(rec.topLeft()));
-//        myLabel->setPixmap(screen->grabWindow(0, rec.x(), rec.y(), rec.width(), rec.height()));
-//        myLabel->show();
     }
     else
     {
-        QMessageBox::critical(this, "Erro", "Não foi possível obter a imagem da tela");
+        QMessageBox::warning(this, "Erro", "Imagem inválida");
     }
-
-
-
-
-    // determine selection, for example using QRect::intersects()
-    // and QRect::contains().
 }

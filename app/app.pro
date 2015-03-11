@@ -12,10 +12,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    rubberband.cpp
+    rubberband.cpp \
+    capturescreen.cpp
 
 HEADERS  += mainwindow.h \
-    rubberband.h
+    rubberband.h \
+    capturescreen.h
 
 INCLUDEPATH += \
     $$SRC_ROOT \
