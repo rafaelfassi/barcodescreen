@@ -7,4 +7,5 @@ CONFIG   += ordered
 
 SUBDIRS += \
     qzxing \
+    qzbar \
     app

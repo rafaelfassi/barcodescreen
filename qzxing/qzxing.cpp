@@ -79,10 +79,11 @@ QString QZXing::decodeImage(QImage image)
 
         res = ((MultiFormatReader*)decoder)->decode(ref, DecodeHints((int)supportedFormats));
 
-        QString string = QString(res->getText()->getText().c_str());
-        emit tagFound(string);
+        QString code = QString(res->getText()->getText().c_str());
+        //int format = res->getBarcodeFormat();
+        emit tagFound(code);
         emit decodingFinished(true);
-        return string;
+        return code;
     }
     catch(zxing::Exception&)
     {

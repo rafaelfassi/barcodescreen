@@ -9,6 +9,8 @@
 #include <QTimer>
 #include <QDebug>
 
+#include "qzbar.h"
+
 //QSystemTrayIcon
 
 MainWindow::MainWindow(QWidget *parent)
@@ -45,15 +47,37 @@ void MainWindow::imageCaptured()
 //        myLabel->show();
 
         QString strCode = m_zXing.decodeImage(m_image);
+        QString engine;
+
+        if(strCode.isEmpty())
+        {
+            QZBar qZbar;
+            strCode = qZbar.decodeImage(m_image);
+
+            if(!strCode.isEmpty())
+                engine = "ZBar";
+        }
+        else
+        {
+            engine = "ZXing";
+        }
+
+
 
         if(!strCode.isEmpty())
         {
-            if(strCode.size() == 44)
-                strCode = Utils::getLinhaDigitavel(strCode);
+            strCode = Utils::getLinhaDigitavel(strCode);
 
-            QClipboard *clipboard = QApplication::clipboard();
-            clipboard->setText(strCode);
-            QMessageBox::information(this, "Ok", "O código foi copiado para a área de transferência\n" + strCode);
+            if(!strCode.isEmpty())
+            {
+                QClipboard *clipboard = QApplication::clipboard();
+                clipboard->setText(strCode);
+                QMessageBox::information(this, engine + " Capturou", "O código foi copiado para a área de transferência\n" + strCode);
+            }
+            else
+            {
+                QMessageBox::warning(this, "Erro", "Código de barra inválido");
+            }
         }
         else
         {
