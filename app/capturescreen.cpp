@@ -47,15 +47,19 @@ void CaptureScreen::mousePressEvent(QMouseEvent *event)
 
 void CaptureScreen::mouseMoveEvent(QMouseEvent *event)
 {
-    m_rubberBand->setGeometry(QRect(m_origin, event->pos()).normalized());
+    if (m_rubberBand)
+        m_rubberBand->setGeometry(QRect(m_origin, event->pos()).normalized());
 }
 
 void CaptureScreen::mouseReleaseEvent(QMouseEvent *)
 {
-    m_rubberBand->hide();
+    if(m_rubberBand)
+    {
+        m_rubberBand->hide();
 
-    QRect rec = m_rubberBand->geometry();
-    m_image = m_labScreen->pixmap()->copy(rec).toImage();
-    emit imageCaptured();
-    this->close();
+        QRect rec = m_rubberBand->geometry();
+        m_image = m_labScreen->pixmap()->copy(rec).toImage();
+        emit imageCaptured();
+        this->close();
+    }
 }
