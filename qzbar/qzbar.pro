@@ -11,7 +11,7 @@ TEMPLATE = lib
 
 win32:CONFIG(release, debug|release): DESTDIR += $$LIB_PATH/release
  else:win32:CONFIG(debug, debug|release): DESTDIR += $$LIB_PATH/debug
- else:unix:!symbian: DESTDIR = $$LIB_PATH
+ else:unix: DESTDIR = $$LIB_PATH
 
 CONFIG += staticlib
 
@@ -31,14 +31,11 @@ HEADERS += \
     zbar/debug.h \
     zbar/error.h \
     zbar/symbol.h \
-    zbar/processor.h \
     zbar/refcnt.h \
     zbar/timer.h \
     zbar/mutex.h \
     zbar/event.h \
     zbar/thread.h \
-    zbar/window.h \
-    zbar/video.h \
     zbar/img_scanner.h \
     zbar/decoder.h \
     zbar/image.h \
@@ -53,7 +50,7 @@ HEADERS += \
     zbar/qrcode/isaac.h \
     zbar/qrcode/bch15_5.h \
     zbar/qrcode/binarize.h \
-    zbar/qrcode/util.h \
+    zbar/qrcode/util.h
 
 
 SOURCES += \
@@ -61,12 +58,7 @@ SOURCES += \
     zbar/config.c \
     zbar/error.c \
     zbar/symbol.c \
-    zbar/convert.c \
-    zbar/processor.c \
-    zbar/processor/lock.c \
     zbar/refcnt.c \
-    zbar/window.c \
-    zbar/video.c \
     zbar/img_scanner.c \
     zbar/scanner.c \
     zbar/decoder.c \
@@ -82,70 +74,6 @@ SOURCES += \
     zbar/qrcode/isaac.c \
     zbar/qrcode/bch15_5.c \
     zbar/qrcode/binarize.c \
-    zbar/qrcode/util.c \
-    zbar/video/null.c
+    zbar/qrcode/util.c
 
 
-win32:{
-
-    HEADERS += \
-        zbar/window/win.h
-
-    SOURCES += \
-        zbar/window/win.c \
-        zbar/processor/win.c \
-        zbar/window/dib.c
-
-} else:unix:{
-
-    HEADERS += \
-        zbar/window/x.h \
-        zbar/processor/posix.h
-
-    SOURCES += \
-        zbar/processor/posix.c \
-        zbar/processor/xp.c \
-        zbar/window/x.c \
-        zbar/window/ximage.c
-
-} else{
-
-    SOURCES += \
-        zbar/processor/null.c \
-        zbar/window/null.c
-
-}
-
-defined(ENABLE_PDF417): {
-    HEADERS += \
-        zbar/decoder/pdf417.h \
-        zbar/decoder/pdf417_hash.h
-
-    SOURCES += \
-        zbar/decoder/pdf417.c
-}
-
-defined(WITH_VFW): {
-    SOURCES += \
-        zbar/video/vfw.c
-}
-
-defined(HAVE_V4L1): {
-    SOURCES += \
-        zbar/video/v4l1.c
-}
-
-defined(HAVE_V4L2): {
-    SOURCES += \
-        zbar/video/v4l2.c
-}
-
-defined(HAVE_XV): {
-    SOURCES += \
-        zbar/window/xv.c
-}
-
-defined(HAVE_LIBJPEG):{
-    SOURCES += \
-        zbar/jpeg.c
-}
