@@ -24,6 +24,7 @@
 #include "refcnt.h"
 
 #ifdef HAVE_LIBPTHREAD
+#include <pthread.h>
 
 pthread_once_t initialized = PTHREAD_ONCE_INIT;
 pthread_mutex_t _zbar_reflock;

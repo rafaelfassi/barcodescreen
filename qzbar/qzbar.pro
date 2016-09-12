@@ -83,8 +83,7 @@ SOURCES += \
     zbar/qrcode/bch15_5.c \
     zbar/qrcode/binarize.c \
     zbar/qrcode/util.c \
-    zbar/video/null.c \
-    zbar/jpeg.c
+    zbar/video/null.c
 
 
 win32:{
@@ -146,3 +145,7 @@ defined(HAVE_XV): {
         zbar/window/xv.c
 }
 
+defined(HAVE_LIBJPEG):{
+    SOURCES += \
+        zbar/jpeg.c
+}
