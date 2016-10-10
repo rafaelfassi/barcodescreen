@@ -6,8 +6,9 @@ QString Utils::getLinhaDigitavel(const QString &codigo)
     {
         if(codigo.at(0) == '8')
         {
-            if(validateTributo(codigo))
-                return formatTributo(codigo);
+            int modulo(0);
+            if(validateTributo(codigo, modulo))
+                return formatTributo(codigo, modulo);
         }
         else
         {
@@ -49,7 +50,7 @@ QString Utils::formatBoletoBanc(const QString &codigo)
     return cmp1 + " " + cmp2 + " " + cmp3 + " " + cmp4 + " " + cmp5;
 }
 
-QString Utils::formatTributo(const QString &codigo)
+QString Utils::formatTributo(const QString &codigo, int modulo)
 {
     QString res;
     const int blockSize(11);
@@ -57,21 +58,40 @@ QString Utils::formatTributo(const QString &codigo)
     {
         QString block;
         block = codigo.mid(from, blockSize);
-        res += (res.size() ? " " : "") + block + getModulo10(block);
+        if(modulo == 10)
+            res += (res.size() ? " " : "") + block + getModulo10(block);
+        else
+            res += (res.size() ? " " : "") + block + getModulo11(block);
     }
 
     return res;
 }
 
-bool Utils::validateTributo(const QString &codigo)
+bool Utils::validateTributo(const QString &codigo, int &modulo)
 {
     QString dac = codigo.mid(3, 1);
     QString indicator = codigo.mid(2, 1);
     QString digits = codigo.mid(0, 3) + codigo.mid(4);
+
     if(indicator == "6" || indicator == "7")
+    {
+        modulo = 10;
         return dac == getModulo10(digits);
+    }
+    else if(indicator == "8" || indicator == "9")
+    {
+        modulo = 11;
+        return dac == getModulo11(digits);
+        // Verificar se o codigo abaixo pode ser valido par alguma situacao,
+        // pois fazia parte de um algoritimo bancario para validacao de tributo.
+        // Mas pelas definicoes atuais da febraban nao faz sentido.
+        //modulo = 10;
+        //return dac == getModulo11(digits, false);
+    }
     else
-        return dac == getModulo11(digits, false);
+    {
+        return false;
+    }
 }
 
 bool Utils::validateBoletoBanc(const QString &codigo)
