@@ -1,23 +1,30 @@
 #include "utils.h"
+#include <QDebug>
+#include <iostream>
 
 QString Utils::getLinhaDigitavel(const QString &codigo)
 {
+    QString res;
     if(codigo.size() == 44)
     {
         if(codigo.at(0) == '8')
         {
             int modulo(0);
             if(validateTributo(codigo, modulo))
-                return formatTributo(codigo, modulo);
+                res = formatTributo(codigo, modulo);
         }
         else
         {
             if(validateBoletoBanc(codigo))
-                return formatBoletoBanc(codigo);
+                res = formatBoletoBanc(codigo);
         }
     }
 
-    return QString();
+//    qDebug("TEST_LD(\"%s\",\n        \"%s\");",
+//           codigo.toStdString().c_str(),
+//           res.toStdString().c_str());
+
+    return res;
 }
 
 QString Utils::formatBoletoBanc(const QString &codigo)
@@ -61,7 +68,7 @@ QString Utils::formatTributo(const QString &codigo, int modulo)
         if(modulo == 10)
             res += (res.size() ? " " : "") + block + getModulo10(block);
         else
-            res += (res.size() ? " " : "") + block + getModulo11(block);
+            res += (res.size() ? " " : "") + block + getModulo11(block, TRIBUTO);
     }
 
     return res;
@@ -81,12 +88,7 @@ bool Utils::validateTributo(const QString &codigo, int &modulo)
     else if(indicator == "8" || indicator == "9")
     {
         modulo = 11;
-        return dac == getModulo11(digits);
-        // Verificar se o codigo abaixo pode ser valido par alguma situacao,
-        // pois fazia parte de um algoritimo bancario para validacao de tributo.
-        // Mas pelas definicoes atuais da febraban nao faz sentido.
-        //modulo = 10;
-        //return dac == getModulo11(digits, false);
+        return dac == getModulo11(digits, TRIBUTO);
     }
     else
     {
@@ -98,7 +100,7 @@ bool Utils::validateBoletoBanc(const QString &codigo)
 {
     QString dac = codigo.mid(4, 1);
     QString digits = codigo.mid(0, 4) + codigo.mid(5);
-    return dac == getModulo11(digits);
+    return dac == getModulo11(digits, BOLETO_BANC);
 }
 
 QString Utils::getModulo10(QString bloco)
@@ -130,10 +132,11 @@ QString Utils::getModulo10(QString bloco)
     return QString::number(dig);
 }
 
-QString Utils::getModulo11(QString bloco, bool subtract)
+QString Utils::getModulo11(QString bloco, ModType mod)
 {
     int fator = 2;
     int dig(0);
+    int sum(0);
 
     for(int i = bloco.size()-1; i >= 0; --i)
     {
@@ -144,21 +147,32 @@ QString Utils::getModulo11(QString bloco, bool subtract)
         else
             return QString();
 
-        dig += n;
+        sum += n;
 
         if(++fator > 9)
             fator = 2;
     }
 
-    if(subtract)
+//    dig = (sum*10)%11;
+//    if(dig < 2 || dig > 9)
+//        dig = 1;
+
+    int res = sum%11;
+    if(res >= 2 && res <= 9)
     {
-        dig = 11 - (dig % 11);
-        if(dig < 1 || dig > 9 )
-            dig = 1;
+        dig = 11 - res;
     }
     else
     {
-        dig = dig % 11;
+        switch(mod)
+        {
+        case TRIBUTO:
+            dig = ((res < 2) ? 0 : 1);
+            break;
+        case BOLETO_BANC:
+            dig = 1;
+            break;
+        }
     }
 
     return QString::number(dig);
