@@ -16,13 +16,15 @@ SOURCES += \
     mainwindow.cpp \
     rubberband.cpp \
     capturescreen.cpp \
-    utils.cpp
+    utils.cpp \
+    test.cpp
 
 HEADERS  += \
     mainwindow.h \
     rubberband.h \
     capturescreen.h \
-    utils.h
+    utils.h \
+    test.h
 
 INCLUDEPATH += \
     $$SRC_ROOT \

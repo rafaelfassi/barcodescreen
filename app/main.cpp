@@ -9,3 +9,13 @@ int main(int argc, char *argv[])
 
     return a.exec();
 }
+
+
+//#include "test.h"
+//int main()
+//{
+//    Test::testBoletoBanc();
+//    Test::testTributo();
+
+//    return 0;
+//}
